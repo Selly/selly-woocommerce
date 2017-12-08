@@ -62,6 +62,12 @@ function selly_gateway_load()
             $this->api_key = $this->get_option('api_key');
             $this->order_id_prefix = $this->get_option('order_id_prefix');
             $this->confirmations = $this->get_option('confirmations');
+            $this->paypal = $this->get_option('paypal') == 'yes' ? true : false;
+            $this->bitcoin = $this->get_option('bitcoin') == 'yes' ? true : false;
+            $this->litecoin = $this->get_option('litecoin') == 'yes' ? true : false;
+            $this->ethereum = $this->get_option('ethereum') == 'yes' ? true : false;
+            $this->dash = $this->get_option('dash') == 'yes' ? true : false;
+            $this->bitcoin_cash = $this->get_option('bitcoin_cash') == 'yes' ? true : false;
 
             // Logger
             $this->log = new WC_Logger();
@@ -82,12 +88,12 @@ function selly_gateway_load()
                     Payment Method <abbr class="required" title="required">*</abbr>
                 </label>
                 <select name="payment_gateway" class="selly-payment-gateway-select">
-                    <option value="PayPal">PayPal</option>
-                    <option value="Bitcoin">Bitcoin</option>
-                    <option value="Ethereum">Ethereum</option>
-                    <option value="Litecoin">Litecoin</option>
-                    <option value="Dash">Dash</option>
-                    <option value="Bitcoin Cash">Bitcoin Cash</option>
+                    <?php if ($this->paypal){ ?><option value="PayPal">PayPal</option><?php } ?>
+                    <?php if ($this->bitcoin){ ?><option value="Bitcoin">Bitcoin</option><?php } ?>
+                    <?php if ($this->litecoin){ ?><option value="Litecoin">Litecoin</option><?php } ?>
+                    <?php if ($this->ethereum){ ?><option value="Ethereum">Ethereum</option><?php } ?>
+                    <?php if ($this->dash){ ?><option value="Dash">Dash</option><?php } ?>
+                    <?php if ($this->bitcoin_cash){ ?><option value="Bitcoin Cash">Bitcoin Cash</option><?php } ?>
                 </select>
             </div>
             <?php
@@ -176,6 +182,42 @@ function selly_gateway_load()
                     'type' => 'number',
                     'description' => __('The default of 1 is advised for both speed and security', 'woocommerce'),
                     'default' => '1'
+                ],
+                'paypal' => [
+                    'title' => __('Accept PayPal', 'woocommerce'),
+                    'label' => __('Enable/Disable PayPal', 'woocommerce'),
+                    'type' => 'checkbox',
+                    'default' => 'no',
+                ],
+                'bitcoin' => [
+                    'title' => __('Accept Bitcoin', 'woocommerce'),
+                    'label' => __('Enable/Disable Bitcoin', 'woocommerce'),
+                    'type' => 'checkbox',
+                    'default' => 'no',
+                ],
+                'litecoin' => [
+                    'title' => __('Accept Litecoin', 'woocommerce'),
+                    'label' => __('Enable/Disable Litecoin', 'woocommerce'),
+                    'type' => 'checkbox',
+                    'default' => 'no',
+                ],
+                'ethereum' => [
+                    'title' => __('Accept Ethereum', 'woocommerce'),
+                    'label' => __('Enable/Disable Ethereum', 'woocommerce'),
+                    'type' => 'checkbox',
+                    'default' => 'no',
+                ],
+                'dash' => [
+                    'title' => __('Accept Dash', 'woocommerce'),
+                    'label' => __('Enable/Disable Dash', 'woocommerce'),
+                    'type' => 'checkbox',
+                    'default' => 'no',
+                ],
+                'bitcoin_cash' => [
+                    'title' => __('Accept Bitcoin Cash', 'woocommerce'),
+                    'label' => __('Enable/Disable Bitcoin Cash', 'woocommerce'),
+                    'type' => 'checkbox',
+                    'default' => 'no',
                 ]
             ];
 
