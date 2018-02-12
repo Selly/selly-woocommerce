@@ -68,6 +68,7 @@ function selly_gateway_load()
             $this->ethereum = $this->get_option('ethereum') == 'yes' ? true : false;
             $this->dash = $this->get_option('dash') == 'yes' ? true : false;
             $this->bitcoin_cash = $this->get_option('bitcoin_cash') == 'yes' ? true : false;
+            $this->ripple = $this->get_option('ripple') == 'yes' ? true : false;
 
             // Logger
             $this->log = new WC_Logger();
@@ -94,6 +95,7 @@ function selly_gateway_load()
                     <?php if ($this->ethereum){ ?><option value="Ethereum">Ethereum</option><?php } ?>
                     <?php if ($this->dash){ ?><option value="Dash">Dash</option><?php } ?>
                     <?php if ($this->bitcoin_cash){ ?><option value="Bitcoin Cash">Bitcoin Cash</option><?php } ?>
+                    <?php if ($this->ripple){ ?><option value="Ripple">Ripple</option><?php } ?>
                 </select>
             </div>
             <?php
@@ -216,6 +218,12 @@ function selly_gateway_load()
                 'bitcoin_cash' => [
                     'title' => __('Accept Bitcoin Cash', 'woocommerce'),
                     'label' => __('Enable/Disable Bitcoin Cash', 'woocommerce'),
+                    'type' => 'checkbox',
+                    'default' => 'no',
+                ],
+                'ripple' => [
+                    'title' => __('Accept Ripple', 'woocommerce'),
+                    'label' => __('Enable/Disable Ripple', 'woocommerce'),
                     'type' => 'checkbox',
                     'default' => 'no',
                 ]
