@@ -9,7 +9,7 @@ if (!defined('ABSPATH')) {
  * Description:  A payment gateway for Selly Pay
  * Author: Selly
  * Author URI: https://selly.gg
- * Version: 1.0.0
+ * Version: 1.1.0
  */
 
 add_action('plugins_loaded', 'selly_gateway_load', 0);
@@ -68,7 +68,10 @@ function selly_gateway_load()
             $this->ethereum = $this->get_option('ethereum') == 'yes' ? true : false;
             $this->dash = $this->get_option('dash') == 'yes' ? true : false;
             $this->bitcoin_cash = $this->get_option('bitcoin_cash') == 'yes' ? true : false;
+            $this->digibyte = $this->get_option('digibyte') == 'yes' ? true : false;
+            $this->nano = $this->get_option('nano') == 'yes' ? true : false;
             $this->ripple = $this->get_option('ripple') == 'yes' ? true : false;
+            $this->zcash = $this->get_option('zcash') == 'yes' ? true : false;
 
             // Logger
             $this->log = new WC_Logger();
@@ -93,9 +96,12 @@ function selly_gateway_load()
                     <?php if ($this->bitcoin){ ?><option value="Bitcoin">Bitcoin</option><?php } ?>
                     <?php if ($this->litecoin){ ?><option value="Litecoin">Litecoin</option><?php } ?>
                     <?php if ($this->ethereum){ ?><option value="Ethereum">Ethereum</option><?php } ?>
-                    <?php if ($this->dash){ ?><option value="Dash">Dash</option><?php } ?>
                     <?php if ($this->bitcoin_cash){ ?><option value="Bitcoin Cash">Bitcoin Cash</option><?php } ?>
+                    <?php if ($this->dash){ ?><option value="Dash">Dash</option><?php } ?>
+                    <?php if ($this->digibyte){ ?><option value="Digibyte">DigiByte</option><?php } ?>
+                    <?php if ($this->nano){ ?><option value="Nano">Nano</option><?php } ?>
                     <?php if ($this->ripple){ ?><option value="Ripple">Ripple</option><?php } ?>
+                    <?php if ($this->zcash){ ?><option value="Zcash">Zcash</option><?php } ?>
                 </select>
             </div>
             <?php
@@ -209,24 +215,42 @@ function selly_gateway_load()
                     'type' => 'checkbox',
                     'default' => 'no',
                 ],
-                'dash' => [
-                    'title' => __('Accept Dash', 'woocommerce'),
-                    'label' => __('Enable/Disable Dash', 'woocommerce'),
-                    'type' => 'checkbox',
-                    'default' => 'no',
-                ],
                 'bitcoin_cash' => [
                     'title' => __('Accept Bitcoin Cash', 'woocommerce'),
                     'label' => __('Enable/Disable Bitcoin Cash', 'woocommerce'),
                     'type' => 'checkbox',
                     'default' => 'no',
                 ],
-                'ripple' => [
-                    'title' => __('Accept Ripple', 'woocommerce'),
-                    'label' => __('Enable/Disable Ripple', 'woocommerce'),
+                'dash' => [
+                    'title' => __('Accept Dash', 'woocommerce'),
+                    'label' => __('Enable/Disable Dash', 'woocommerce'),
                     'type' => 'checkbox',
                     'default' => 'no',
-                ]
+                ],
+                'digibyte' => [
+                    'title' => __('Accept DigiByte', 'woocommerce'),
+                    'label' => __('Enable/Disable DigiByte', 'woocommerce'),
+                    'type' => 'checkbox',
+                    'default' => 'no',
+                ],
+                'nano' => [
+                    'title' => __('Accept Nano', 'woocommerce'),
+                    'label' => __('Enable/Disable Nano', 'woocommerce'),
+                    'type' => 'checkbox',
+                    'default' => 'no',
+                ],
+                'ripple' => [
+                    'title' => __('Accept Ripple (XRP)', 'woocommerce'),
+                    'label' => __('Enable/Disable Ripple (XRP)', 'woocommerce'),
+                    'type' => 'checkbox',
+                    'default' => 'no',
+                ],
+                'zcash' => [
+                    'title' => __('Accept Zcash', 'woocommerce'),
+                    'label' => __('Enable/Disable Zcash', 'woocommerce'),
+                    'type' => 'checkbox',
+                    'default' => 'no',
+                ],
             ];
 
         }
@@ -244,7 +268,7 @@ function selly_gateway_load()
                 'confirmations' => $this->confirmations
             ];
 
-            $curl = curl_init('https://selly.gg/api/pay');
+            $curl = curl_init('https://selly.gg/api/v2/pay');
             curl_setopt($curl, CURLOPT_POST, true);
             curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($params));
             curl_setopt($curl, CURLOPT_USERAGENT, 'Selly WooCommerce (PHP ' . PHP_VERSION . ')');
@@ -311,10 +335,10 @@ function selly_gateway_load()
 
                 if ((int)$selly_order['status'] == 100) {
                     $order->payment_complete();
-                } elseif ((int)$selly_order['status'] == 53) {
+                } elseif ((int)$selly_order['status'] == 54) {
                     $order->update_status('on-hold', sprintf(__('Awaiting crypto currency confirmations', 'woocommerce')));
                 } elseif ((int)$selly_order['status'] == 53) {
-                    $order->update_status('refunded', sprintf(__('Selly payment refunded', 'woocommerce')));
+                    $order->update_status('on-hold', sprintf(__('Cryptocurrency payment only partially paid', 'woocommerce')));
                 }
             }
         }
@@ -327,7 +351,7 @@ function selly_gateway_load()
          */
         function valid_selly_order($order_id)
         {
-            $curl = curl_init('https://selly.gg/api/orders/' . $order_id);
+            $curl = curl_init('https://selly.gg/api/v2/orders/' . $order_id);
             curl_setopt($curl, CURLOPT_USERAGENT, 'Selly WooCommerce (PHP ' . PHP_VERSION . ')');
             curl_setopt($curl, CURLOPT_HTTPHEADER, ['Authorization: Basic ' . base64_encode($this->email . ':' . $this->api_key)]);
             curl_setopt($curl, CURLOPT_TIMEOUT, 10);
