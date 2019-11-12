@@ -5,11 +5,11 @@ if (!defined('ABSPATH')) {
 
 /**
  * Plugin Name: Selly WooCommerce Payment Gateway
- * Plugin URI: https://selly.gg
+ * Plugin URI: https://selly.io
  * Description:  A payment gateway for Selly Pay
  * Author: Selly
- * Author URI: https://selly.gg
- * Version: 1.1.0
+ * Author URI: https://selly.io
+ * Version: 1.2.0
  */
 
 add_action('plugins_loaded', 'selly_gateway_load', 0);
@@ -66,12 +66,8 @@ function selly_gateway_load()
             $this->bitcoin = $this->get_option('bitcoin') == 'yes' ? true : false;
             $this->litecoin = $this->get_option('litecoin') == 'yes' ? true : false;
             $this->ethereum = $this->get_option('ethereum') == 'yes' ? true : false;
-            $this->dash = $this->get_option('dash') == 'yes' ? true : false;
-            $this->bitcoin_cash = $this->get_option('bitcoin_cash') == 'yes' ? true : false;
-            $this->digibyte = $this->get_option('digibyte') == 'yes' ? true : false;
-            $this->nano = $this->get_option('nano') == 'yes' ? true : false;
-            $this->ripple = $this->get_option('ripple') == 'yes' ? true : false;
-            $this->zcash = $this->get_option('zcash') == 'yes' ? true : false;
+            $this->skrill = $this->get_option('skrill') == 'yes' ? true : false;
+            $this->perfect_money = $this->get_option('perfect_money') == 'yes' ? true : false;
 
             // Logger
             $this->log = new WC_Logger();
@@ -97,11 +93,8 @@ function selly_gateway_load()
                     <?php if ($this->litecoin){ ?><option value="Litecoin">Litecoin</option><?php } ?>
                     <?php if ($this->ethereum){ ?><option value="Ethereum">Ethereum</option><?php } ?>
                     <?php if ($this->bitcoin_cash){ ?><option value="Bitcoin Cash">Bitcoin Cash</option><?php } ?>
-                    <?php if ($this->dash){ ?><option value="Dash">Dash</option><?php } ?>
-                    <?php if ($this->digibyte){ ?><option value="Digibyte">DigiByte</option><?php } ?>
-                    <?php if ($this->nano){ ?><option value="Nano">Nano</option><?php } ?>
-                    <?php if ($this->ripple){ ?><option value="Ripple">Ripple</option><?php } ?>
-                    <?php if ($this->zcash){ ?><option value="Zcash">Zcash</option><?php } ?>
+                    <?php if ($this->skrill){ ?><option value="Skrill">Skrill</option><?php } ?>
+                    <?php if ($this->perfect_money){ ?><option value="Perfect Money">Perfect Money</option><?php } ?>
                 </select>
             </div>
             <?php
@@ -221,36 +214,18 @@ function selly_gateway_load()
                     'type' => 'checkbox',
                     'default' => 'no',
                 ],
-                'dash' => [
-                    'title' => __('Accept Dash', 'woocommerce'),
-                    'label' => __('Enable/Disable Dash', 'woocommerce'),
+                'skrill' => [
+                    'title' => __('Accept Skrill', 'woocommerce'),
+                    'label' => __('Enable/Disable Skrill', 'woocommerce'),
                     'type' => 'checkbox',
                     'default' => 'no',
                 ],
-                'digibyte' => [
-                    'title' => __('Accept DigiByte', 'woocommerce'),
-                    'label' => __('Enable/Disable DigiByte', 'woocommerce'),
+                'perfect_money' => [
+                    'title' => __('Accept Perfect Money', 'woocommerce'),
+                    'label' => __('Enable/Disable Perfect Money', 'woocommerce'),
                     'type' => 'checkbox',
                     'default' => 'no',
-                ],
-                'nano' => [
-                    'title' => __('Accept Nano', 'woocommerce'),
-                    'label' => __('Enable/Disable Nano', 'woocommerce'),
-                    'type' => 'checkbox',
-                    'default' => 'no',
-                ],
-                'ripple' => [
-                    'title' => __('Accept Ripple (XRP)', 'woocommerce'),
-                    'label' => __('Enable/Disable Ripple (XRP)', 'woocommerce'),
-                    'type' => 'checkbox',
-                    'default' => 'no',
-                ],
-                'zcash' => [
-                    'title' => __('Accept Zcash', 'woocommerce'),
-                    'label' => __('Enable/Disable Zcash', 'woocommerce'),
-                    'type' => 'checkbox',
-                    'default' => 'no',
-                ],
+                ]
             ];
 
         }
@@ -268,7 +243,7 @@ function selly_gateway_load()
                 'confirmations' => $this->confirmations
             ];
 
-            $curl = curl_init('https://selly.gg/api/v2/pay');
+            $curl = curl_init('https://selly.io/api/v2/pay');
             curl_setopt($curl, CURLOPT_POST, true);
             curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($params));
             curl_setopt($curl, CURLOPT_USERAGENT, 'Selly WooCommerce (PHP ' . PHP_VERSION . ')');
@@ -351,7 +326,7 @@ function selly_gateway_load()
          */
         function valid_selly_order($order_id)
         {
-            $curl = curl_init('https://selly.gg/api/v2/orders/' . $order_id);
+            $curl = curl_init('https://selly.io/api/v2/orders/' . $order_id);
             curl_setopt($curl, CURLOPT_USERAGENT, 'Selly WooCommerce (PHP ' . PHP_VERSION . ')');
             curl_setopt($curl, CURLOPT_HTTPHEADER, ['Authorization: Basic ' . base64_encode($this->email . ':' . $this->api_key)]);
             curl_setopt($curl, CURLOPT_TIMEOUT, 10);
